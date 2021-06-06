@@ -8,8 +8,10 @@ c. This has been updated in the latest version of env-cmd, if you are using vers
 
 MongoDB Atlas
 -------------
-1. Database - user - TaskKeeperApp - OwiAdXztyFq88dNN
-2. Connection String - mongodb+srv://TaskKepperApp:<password>@cluster0.qagyr.mongodb.net/test
+1. DB - user -  TaskKeeperApp             password - TBKjOLuxRovdSqeK
+2. Connection String - mongodb+srv://TaskKeeperApp:<password>@cluster0.oztbz.mongodb.net/myFirstDatabase?retryWrites=true&w=majority
+MONGODB_URL=mongodb+srv://TaskKeeperApp:TBKjOLuxRovdSqeK@cluster0.oztbz.mongodb.net/taskKeeper?retryWrites=true&w=majority
+
 
 1. If we modify the collection after creation then we must restart the mongoose server to reflect the changes
 2. Middleware is the functionality or logic run between user request and router
