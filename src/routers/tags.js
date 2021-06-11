@@ -22,11 +22,10 @@ tagRouter.get('/tags', async (req,res)=>
     const tag = await Tag.find({})
     try
     {
-        res.send({tag})
+        res.send(tag)
     }
     catch(e)
     {
-        console.log("Error Occured",e)
         res.status(400).send(e.toString())
     }
 })

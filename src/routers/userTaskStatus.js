@@ -69,14 +69,13 @@ taskStatusRouter.get('/users/tasks/status/date/:date', auth, async (req,res)=>
 {
     
     var taskStatus = await TaskStatus.find({ userId : req.user._id })
-    if(taskStatus.count == 0)
+    try
     {
-        res.status(404).send()
-    }
-        
-    else
-    {
-        try
+        if(taskStatus.count == 0)
+        {
+            throw new Error("Data not found") 
+        }
+        else
         {
             var tasks =  taskStatus.filter((task) =>
             { 
@@ -84,67 +83,83 @@ taskStatusRouter.get('/users/tasks/status/date/:date', auth, async (req,res)=>
                 if( dateString.trim() == req.params.date.trim())
                     return task    
             })
-            if (task.count == 0)
-                res.status(404).send()
+            if (tasks.length == 0)
+                throw new Error("Data not found")
             else
-                res.send(tasks)
-                
-        }
-        catch(e)
-        {
-            res.status(404).send()
-        }
-        
+                res.send(tasks)     
+        }    
+    }
+    catch(e)
+    {
+        res.status(404).send()
     }
 })
 // This router retrieves task details of user on specific tag from TaskStatus Collection
 taskStatusRouter.get('/users/tasks/status/tag/:tagName', auth, async (req,res)=>
 {
     var tag = await Tag.findOne({ name: req.params.tagName })
-    await tag.populate('tasks').execPopulate()
-    var flag = 0, taskStatus
-    tasks = tag.tasks.filter((task) => task._id)
-    if(tag)
+    var taskStatus = []
+    try
     {
-        taskStatus = await TaskStatus.find( { taskId: {$in: tasks},
+        if(tag)
+        {
+            await tag.populate('tasks').execPopulate()
+            tasks = tag.tasks.filter((task) => task._id)
+            taskStatus = await TaskStatus.find( { taskId: {$in: tasks},
                                                     userId : req.user._id
-                                                    })
-        res.send(taskStatus)
+                                            })
+        }
+        else
+            throw new Error("Tag not found")
+        if(taskStatus.length > 0)
+        {
+            res.send(taskStatus)  
+        }
+        else
+        {
+            throw new Error("Task not found")
+        }
     }
-    if(!taskStatus)
+    catch(e)
     {
-        flag = 1
-    }
-    
-    if(flag == 1)
-        res.status(404).send("No Data Found")    
+        res.status(404).send("No Data Found")
+    }  
 })
 // This router retrieves task details of user on specific task from TaskStatus Collection
 taskStatusRouter.delete('/users/tasks/:taskName', auth, async (req,res)=>
 {
     const task = await Task.findOne({ name: req.params.taskName })
-    if(!task)
-        res.status(404).send()
-    const taskStatus = await TaskStatus.deleteMany({ taskId : task._id, userId : req.user._id })
-    if(taskStatus.deletedCount == 0)
+    try
+    {
+        if(!task)
+            throw new Error("Data not found")
+        const taskStatus = await TaskStatus.deleteMany({ taskId : task._id, userId : req.user._id })
+        if(taskStatus.deletedCount == 0)
+        {
+            throw new Error("Data not found")
+        }
+        else
+        {
+            res.status(200).send("Tasks Deleted Successfully")
+        }
+    }
+    catch(e)
     {
         res.status(404).send()
     }
-    else
-    {
-        res.status(200).send("Tasks Deleted Successfully")
-    }
+    
         
 })
 // This router retrieves all tasks details of user from TaskStatus Collection
 taskStatusRouter.get('/users/tasks/status', auth, async (req,res)=>
 {
-    const taskStatus = await TaskStatus.find({ userId : req.user._id })
-    if(taskStatus)
+    const taskStatus = await TaskStatus.find({ userId :  req.user._id })
+    if(taskStatus.length == 0)
         res.status(404).send()
     else
         res.send(taskStatus)
         
 })
+
 
 module.exports = taskStatusRouter

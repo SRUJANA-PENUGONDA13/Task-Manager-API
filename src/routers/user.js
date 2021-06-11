@@ -9,7 +9,7 @@ const TaskStatus = require('../models/userTaskStatus')
 const auth = require('../middleware/auth')
 
 // Adding mail module
-const { welcomeMail } = require('../mail/mail.js')
+const { welcomeMail } = require('../mail/mail')
 
 // This router adds a user to the User Collection
 userRouter.post('/users', async (req,res)=>
@@ -30,7 +30,7 @@ userRouter.post('/users', async (req,res)=>
 })
 
 // This router retrieves all users from User Collection
-userRouter.get('/users', auth, async (req,res)=>
+userRouter.get('/users', async (req,res)=>
 {
     const users = await User.find({})
     try

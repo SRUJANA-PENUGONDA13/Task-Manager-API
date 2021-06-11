@@ -44,7 +44,7 @@ taskRouter.get('/tasks', async (req,res)=>
 // This router retrieves all tasks of a specific tag from Task Collection
 taskRouter.get('/tasks/:tagName', async (req,res)=>
 {
-    const tag = await Tag.findOne({ name: req.params.tagName })
+    const tag = await Tag.findOne({ name: req.params.tagName.toString().trim() })
     try
     {
         if(!tag)
